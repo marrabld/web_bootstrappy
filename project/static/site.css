@@ -1,0 +1,50 @@
+/*body {
+    margin: 0 0 100px; *//* bottom = footer height *//*
+    padding: 25px;
+}*/
+
+body{
+background: #DDDDDD
+}
+
+.crd_input{
+background: #FFFFFF
+}
+/*
+html {
+    position: relative;
+    min-height: 100%;
+}
+*/
+
+
+.div_background
+{
+/* background-image: url("./img/immortal.jpg"); */
+/* background-color: #AAAAAA */
+}
+
+.mdl-grid {
+  padding: 0!important;
+}
+
+.bootstrap-card {
+ background: url("./img/31LJpSG.gif") center / cover;
+}
+
+.full-width {
+    width: 100%;
+    border: 0px;
+}
+
+.table {
+}
+
+/*
+.mdl-cell {
+  background: #bdbdbd;
+  padding: 30px 0;
+  text-align: center;
+  color: #424242;
+  font-weight: bold;
+}*/
