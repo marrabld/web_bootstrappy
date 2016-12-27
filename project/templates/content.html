@@ -1,5 +1,5 @@
 <p></p>
-<form action="" method="post" name="frm_inputs">
+<form action="{{ url_for('upload_file') }}" method="POST" name="frm_inputs" enctype="multipart/form-data">
     <div class="div_background">
         <!--<div class="mdl-layout">-->
         <p></p>
@@ -23,8 +23,8 @@
                         <div class="mdl-cell mdl-cell--6-col">
                             <center>
                                 <div class="mdl-textfield mdl-js-textfield">
-                                    <input class="mdl-textfield__input" type="text" id="txt_project_name"/>
-                                    <label class="mdl-textfield__label">Project Name</label>
+                                    <input class="mdl-textfield__input" type="text" id="txt_project_name" value="" name="txt_project_name"/>
+                                    <label class="mdl-textfield__label" for="txt_project_name">Project Name</label>
                                 </div>
                             </center>
                         </div>
@@ -47,7 +47,7 @@
                         <div class="mdl-cell mdl-cell--6-col">
                             <center>
                                 <div class="mdl-textfield mdl-js-textfield">
-                                    <input class="mdl-textfield__input" type="text" id="txt_username"/>
+                                    <input class="mdl-textfield__input" type="text" id="txt_soemthing"/>
                                     <label class="mdl-textfield__label">Username</label>
                                 </div>
                             </center>
@@ -63,9 +63,14 @@
                                     <!--</div>-->
                                 <p><input type="file" name="file" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored">
                                     <!--<i class="material-icons">file_upload</i>-->
-                                    <button for="mySubmit" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--fab mdl-button--colored"><i class="material-icons">file_upload</i></button>
+                                    <input type='submit' class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--fab mdl-button--colored" >
                                     <!--<input type="submit" value="submited">-->
                                 </p>
+
+                                <!--<strong>Files:</strong><br>-->
+                                <!--<input id="file-picker" type="file" name="file" accept="image/*" multiple>-->
+                                <!--<div id="msg"></div>-->
+                                <!--<input type="submit" value="Upload!" id="upload-button">-->
 
                             </center>
                         </div>
