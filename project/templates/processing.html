@@ -23,7 +23,9 @@
                     <div class="mdl-grid">
                         <div class="mdl-cell mdl-cell--6-col">
                             <center>
-                                <img src="./static/img/31LJpSG.gif" width="100%">
+                                <!--<img src="./static/img/31LJpSG.gif" width="100%">-->
+                                <canvas id="myChart" width="400" height="400"></canvas>
+
                             </center>
                         </div>
                         <div class="mdl-cell mdl-cell--6-col">
@@ -64,3 +66,32 @@
     <!--</div>-->
     </div>
 </form>
+<script src="static/Chart.min.js"></script>
+<script>
+var ctx = document.getElementById("myChart");
+myData = {{ data | tojson }}
+
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: myData.label,
+        datasets: [{
+            label: 'Reflectance',
+            data: myData.data,
+            borderColor: [
+                'rgba(255,99,132,1)',
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+});
+</script>

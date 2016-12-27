@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, flash, url_for
 from werkzeug.utils import secure_filename
-import processing_form
+import numpy as np
 
 import os
 
@@ -8,14 +8,22 @@ app = Flask(__name__)
 app.secret_key = "satan secret key"
 
 app.config['UPLOAD_FOLDER'] = '/tmp'
+app.config['DATA'] = [1, 3, 4, 3, 5, 7]
 ALLOWED_EXTENSIONS = set(['csv', 'jpg'])
 
 
 @app.route('/', methods=['GET', 'POST'])
-def hello():
+def index():
     # main_form = processing_form.main_form()
-    # lbl_input_test  = ""
-    return render_template('./index.html')
+    print(app.config['DATA'])
+    return render_template('./index.html', data=app.config['DATA'])
+
+
+def publish_data(filename):
+    x, y = np.loadtxt(filename, delimiter=',')
+    data = {'data': list(y),
+            'label': list(x)}
+    app.config['DATA'] = data
 
 
 def allowed_file(filename):
@@ -47,7 +55,9 @@ def upload_file():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             # return redirect(url_for('uploaded_file',
             #                         filename=filename))
-    return render_template('index.html')
+            # return
+            publish_data(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('index') + '#tab_processing')
 
 
 if __name__ == '__main__':
