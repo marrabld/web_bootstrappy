@@ -25,12 +25,18 @@
                             <center>
                                 <!--<img src="./static/img/31LJpSG.gif" width="100%">-->
                                 <canvas id="myChart" width="400" height="400"></canvas>
+                                <input id="slider1" class="mdl-slider mdl-js-slider" type="range" min="0" max="100"
+                                   value="0" tabindex="0"
+                                   oninput="showMessage(this.value)" onchange="showMessage(this.value)">
 
                             </center>
                         </div>
                         <div class="mdl-cell mdl-cell--6-col">
                             <center>
-                                <img src="./static/img/vQh7hUK.gif" width="100%">
+                                <canvas id="myChart2" width="400" height="400"></canvas>
+                                <input id="slider2" class="mdl-slider mdl-js-slider" type="range" min="0" max="100"
+                                   value="0" tabindex="0"
+                                   oninput="showMessage(this.value)" onchange="showMessage(this.value)">
 
                             </center>
 
@@ -40,7 +46,7 @@
 
                     <div class="mdl-grid">
                         <div class="mdl-cell mdl-cell--12-col">
-                            <input id="slider1" class="mdl-slider mdl-js-slider" type="range" min="0" max="100"
+                            <input id="slider3" class="mdl-slider mdl-js-slider" type="range" min="0" max="100"
                                    value="0" tabindex="0"
                                    oninput="showMessage(this.value)" onchange="showMessage(this.value)">
                         </div>
@@ -68,30 +74,83 @@
 </form>
 <script src="static/Chart.min.js"></script>
 <script>
+Chart.defaults.global.legend.display = false;
 var ctx = document.getElementById("myChart");
+var ctx_synth = document.getElementById("myChart2");
 myData = {{ data | tojson }}
 
 var myChart = new Chart(ctx, {
     type: 'line',
+
     data: {
         labels: myData.label,
-        datasets: [{
-            label: 'Reflectance',
-            data: myData.data,
-            borderColor: [
-                'rgba(255,99,132,1)',
+        datasets: [
+            {% for item in data['data'] %}
+            {
+            data: myData.data[{{ loop.index0 }}],
+            legend: { display: false },
+            borderColor: 'rgba(99, 99, 132, 0.7)',
+            backgroundColor: 'rgba(255, 255, 255, 0.0)',
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "rgba(75,192,192,1)",
+            pointHoverBorderColor: "rgba(220,220,220,1)",
+            hoverBorderColor: "rgba(200, 0, 0, 1)",
+            },
+
+            {% endfor %}
             ],
-            borderWidth: 1
-        }]
     },
     options: {
         scales: {
-            yAxes: [{
+            xAxes: [{
                 ticks: {
                     beginAtZero:true
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: 'wavelength (nm)'
                 }
             }]
+
         }
     }
 });
+
+var myChart = new Chart(ctx_synth, {
+    type: 'radar',
+
+    data: {
+        labels: myData.label,
+        datasets: [
+            {% for item in data['data'] %}
+            {
+            data: myData.data[{{ loop.index0 }}],
+            legend: { display: false },
+            borderColor: 'rgba(255, 99, 132, 0.7)',
+            backgroundColor: 'rgba(255, 255, 255, 0.0)',
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "rgba(75,192,192,1)",
+            pointHoverBorderColor: "rgba(220,220,220,1)",
+            hoverBorderColor: "rgba(200, 0, 0, 1)",
+            },
+
+            {% endfor %}
+            ],
+    },
+    options: {
+        scales: {
+            xAxes: [{
+                ticks: {
+                    beginAtZero:true
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: 'wavelength (nm)'
+                }
+            }]
+
+        }
+    }
+});
+Chart.defaults.global.legend.display = false;
 </script>

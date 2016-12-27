@@ -20,9 +20,11 @@ def index():
 
 
 def publish_data(filename):
-    x, y = np.loadtxt(filename, delimiter=',')
-    data = {'data': list(y),
-            'label': list(x)}
+    _tmp = np.loadtxt(filename, delimiter=',')
+    x = _tmp[0, :]
+    y = _tmp[1:, :]
+    data = {'data': y.tolist(),
+            'label': x.tolist()}
     app.config['DATA'] = data
 
 
