@@ -129,7 +129,7 @@ var myChart2 = new Chart(ctx_synth, {
     data: {
         labels: processed_data.label,
         datasets: [
-            {% for item in data['data'] %}
+            {% for item in processed_data['data'] %}
             {
             data: processed_data.data[{{ loop.index0 }}],
             legend: { display: false },
