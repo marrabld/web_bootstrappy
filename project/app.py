@@ -15,7 +15,7 @@ app.secret_key = "satan secret key"
 app.config['UPLOAD_FOLDER'] = '/tmp'
 app.config['DATA'] = [1, 3, 4, 3, 5, 7]
 app.config['PROCESSED_DATA'] = [1, 2, 3, 4, 5, 6]
-ALLOWED_EXTENSIONS = set(['csv'])
+ALLOWED_EXTENSIONS = {'csv'}
 
 
 @app.route('/', methods=['GET', 'POST'])
