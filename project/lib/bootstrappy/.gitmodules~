@@ -1,0 +1,3 @@
+[submodule "DbConnector"]
+	path = .
+	url = https://github.com/marrabld/bootstrappy.git
