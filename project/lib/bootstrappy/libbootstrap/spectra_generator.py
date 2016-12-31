@@ -9,15 +9,15 @@ import logger as log
 import scipy
 import scipy.fftpack
 import numpy as np
-import lib.bootstrappy.libbootstrap
-import lib.bootstrappy.libbootstrap.state
+#import lib.bootstrappy.libbootstrap
+import state
 import numpy.random
 # import libbootstrap
 # import libbootstrap.state
 import csv
 import spectralmodel
 
-DEBUG_LEVEL = lib.bootstrappy.libbootstrap.state.State().debug
+DEBUG_LEVEL = state.State().debug
 lg = log.logger
 lg.setLevel(DEBUG_LEVEL)
 

@@ -3,17 +3,19 @@ __author__ = 'marrabld'
 import os
 import sys
 
+sys.path.append("..")
 sys.path.append("../..")
+sys.path.append("../../../..")
 
 import logger as log
 import scipy
 import scipy.fftpack
 import numpy as np
-import lib.bootstrappy.libbootstrap
-import lib.bootstrappy.libbootstrap.state
+#import lib.bootstrappy.libbootstrap
+import state
 import csv
 
-DEBUG_LEVEL = lib.bootstrappy.libbootstrap.state.State().debug
+DEBUG_LEVEL = state.State().debug
 lg = log.logger
 lg.setLevel(DEBUG_LEVEL)
 
@@ -103,4 +105,3 @@ class helper_methods():
             raise IOError
 
         return scipy.asarray(wave, dtype=float), scipy.asarray(iop, dtype=float)
-
