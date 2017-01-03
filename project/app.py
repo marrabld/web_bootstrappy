@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash, url_for
+from flask import Flask, render_template, request, redirect, flash, url_for, jsonify, session
 from werkzeug.utils import secure_filename
 import numpy as np
 import sys
@@ -10,21 +10,40 @@ import lib.bootstrappy.libbootstrap.spectralmodel as spectralmodel
 import lib.bootstrappy.libbootstrap.spectra_generator as spectra_generator
 
 app = Flask(__name__)
-app.secret_key = "satan secret key"
+app.secret_key = "satan's secret key"
 
 app.config['UPLOAD_FOLDER'] = '/tmp'
-app.config['DATA'] = [1, 3, 4, 3, 5, 7]
-app.config['PROCESSED_DATA'] = [1, 2, 3, 4, 5, 6]
 ALLOWED_EXTENSIONS = {'csv'}
+
+
+@app.before_request
+def session_management():
+    # make the session last indefinitely until it is cleared
+    session.permanent = True
+
+
+@app.route('/api/data/training', methods=['GET', 'POST'])
+def data_training():
+    return jsonify(session['DATA'])
+
+
+@app.route('/api/data/processed', methods=['GET', 'POST'])
+def data_processed():
+    return jsonify(session['PROCESSED_DATA'])
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    if not 'DATA' in session:
+        session['DATA'] = {'data': [0, 1, 2],
+                           'label': [2, 5, 10]}
+        session['PROCESSED_DATA'] = {'data': [0, 1, 2],
+                                     'label': [2, 5, 10]}
     # main_form = processing_form.main_form()
-    print(app.config['DATA'])
+    # print(session['DATA'])
     return render_template('./index.html',
-                           data=app.config['DATA'],
-                           processed_data=app.config['PROCESSED_DATA'])
+                           data=session['DATA'],
+                           processed_data=session['PROCESSED_DATA'])
 
 
 def calc_bootstraps(filename, num_realizations=300):
@@ -32,7 +51,7 @@ def calc_bootstraps(filename, num_realizations=300):
     sm.build()
     sg = spectra_generator.GenerateRealisation(sm, num_realizations)
     rrs = sg.gen_Rrs()
-    print('def calc_bootstrap')
+
     np.savetxt('bootstrap.csv', np.real(rrs), delimiter=',')
 
     _tmp = np.loadtxt('bootstrap.csv', delimiter=',')
@@ -40,7 +59,7 @@ def calc_bootstraps(filename, num_realizations=300):
     y = np.real(_tmp[1:, :])
     my_processed_data = {'data': y.tolist(),
                          'label': x.tolist()}
-    app.config['PROCESSED_DATA'] = my_processed_data
+    session['PROCESSED_DATA'] = my_processed_data
 
 
 def publish_data(filename):
@@ -49,7 +68,7 @@ def publish_data(filename):
     y = _tmp[1:, :]
     data = {'data': y.tolist(),
             'label': x.tolist()}
-    app.config['DATA'] = data
+    session['DATA'] = data
 
 
 def publish_processed_data(filename):
@@ -58,8 +77,8 @@ def publish_processed_data(filename):
     x = _tmp[0, :]
     y = _tmp[1:, :]
     processed_data = {'data': y.tolist(),
-            'label': x.tolist()}
-    app.config['PROCESSED_DATA'] = processed_data
+                      'label': x.tolist()}
+    session['PROCESSED_DATA'] = processed_data
 
 
 def allowed_file(filename):
@@ -95,7 +114,12 @@ def upload_file():
             publish_data(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             calc_bootstraps(os.path.join(app.config['UPLOAD_FOLDER'], filename), 200)
             publish_processed_data(app.config['UPLOAD_FOLDER'])
-            return redirect(url_for('index') + '#tab_processing')
+            # return redirect(url_for('index') + '#tab_processing')
+            # return redirect(url_for('index'))
+            # index()
+            return render_template('./index.html',
+                                   data=session['DATA'],
+                                   processed_data=session['PROCESSED_DATA'])
 
 
 if __name__ == '__main__':
