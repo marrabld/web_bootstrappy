@@ -1,9 +1,12 @@
 from flask import Flask, render_template, request, redirect, flash, url_for, jsonify, session
 from werkzeug.utils import secure_filename
+from werkzeug.contrib.cache import SimpleCache
 import numpy as np
 import sys
 import os
 
+# cache = MemcachedCache(['127.0.0.1:112111'])
+cache = SimpleCache()
 sys.path.append('../..')
 print(os.getcwd())
 import lib.bootstrappy.libbootstrap.spectralmodel as spectralmodel
@@ -24,26 +27,33 @@ def session_management():
 
 @app.route('/api/data/training', methods=['GET', 'POST'])
 def data_training():
-    return jsonify(session['DATA'])
+    return jsonify(cache.get('DATA'))
 
 
 @app.route('/api/data/processed', methods=['GET', 'POST'])
 def data_processed():
-    return jsonify(session['PROCESSED_DATA'])
+    return jsonify(cache.get('PROCESSED_DATA'))
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    if not 'DATA' in session:
-        session['DATA'] = {'data': [0, 1, 2],
-                           'label': [2, 5, 10]}
-        session['PROCESSED_DATA'] = {'data': [0, 1, 2],
-                                     'label': [2, 5, 10]}
+    if not cache.get('DATA'):
+        cache.set('DATA', {'data': [0, 1, 2],
+                           'label': [2, 5, 10]})
+
+        cache.set('PROCESSED_DATA', {'data': [0, 1, 2],
+                                     'label': [2, 5, 10]})
+
+    # if not 'DATA' in session:
+    #     session['DATA'] = {'data': [0, 1, 2],
+    #                        'label': [2, 5, 10]}
+    #     session['PROCESSED_DATA'] = {'data': [0, 1, 2],
+    #                                  'label': [2, 5, 10]}
     # main_form = processing_form.main_form()
     # print(session['DATA'])
     return render_template('./index.html',
-                           data=session['DATA'],
-                           processed_data=session['PROCESSED_DATA'])
+                           data=cache.get('DATA'),
+                           processed_data=cache.get('PROCESSED_DATA'))
 
 
 def calc_bootstraps(filename, num_realizations=100):
@@ -59,7 +69,8 @@ def calc_bootstraps(filename, num_realizations=100):
     y = np.real(_tmp[1:, :])
     my_processed_data = {'data': y.tolist(),
                          'label': x.tolist()}
-    session['PROCESSED_DATA'] = my_processed_data
+    # session['PROCESSED_DATA'] = my_processed_data
+    cache.set('PROCESSED_DATA', my_processed_data)
 
 
 def publish_data(filename):
@@ -68,7 +79,7 @@ def publish_data(filename):
     y = _tmp[1:, :]
     data = {'data': y.tolist(),
             'label': x.tolist()}
-    session['DATA'] = data
+    cache.set('DATA', data)
 
 
 def publish_processed_data(filename):
@@ -78,7 +89,7 @@ def publish_processed_data(filename):
     y = _tmp[1:, :]
     processed_data = {'data': y.tolist(),
                       'label': x.tolist()}
-    session['PROCESSED_DATA'] = processed_data
+    cache.set('PROCESSED_DATA', processed_data)
 
 
 def allowed_file(filename):
@@ -119,8 +130,8 @@ def upload_file():
             # return redirect(url_for('index'))
             # index()
             return render_template('./index.html',
-                                   data=session['DATA'],
-                                   processed_data=session['PROCESSED_DATA'])
+                                   data=cache.get('DATA'),
+                                   processed_data=cache.get('PROCESSED_DATA'))
 
 
 if __name__ == '__main__':
