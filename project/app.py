@@ -46,7 +46,7 @@ def index():
                            processed_data=session['PROCESSED_DATA'])
 
 
-def calc_bootstraps(filename, num_realizations=300):
+def calc_bootstraps(filename, num_realizations=100):
     sm = spectralmodel.BuildSpectralModel(filename)
     sm.build()
     sg = spectra_generator.GenerateRealisation(sm, num_realizations)
@@ -90,6 +90,7 @@ def allowed_file(filename):
 def upload_file():
     app.config['UPLOAD_FOLDER'] = os.path.join(app.config['UPLOAD_FOLDER'], request.form['txt_project_name'])
     print("file_upload")
+    num_iters = np.int(request.form['txt_num_iters'])
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -112,7 +113,7 @@ def upload_file():
             #                         filename=filename))
             # return
             publish_data(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            calc_bootstraps(os.path.join(app.config['UPLOAD_FOLDER'], filename), 200)
+            calc_bootstraps(os.path.join(app.config['UPLOAD_FOLDER'], filename), num_iters)
             publish_processed_data(app.config['UPLOAD_FOLDER'])
             # return redirect(url_for('index') + '#tab_processing')
             # return redirect(url_for('index'))

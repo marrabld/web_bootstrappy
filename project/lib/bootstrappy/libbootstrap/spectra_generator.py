@@ -31,6 +31,8 @@ class GenerateRealisation():
         :return:
         """
 
+        self.num_spectra = num_spectra
+
         try:
             assert(isinstance(spectral_model, spectralmodel.BuildSpectralModel))
         except:
@@ -124,7 +126,7 @@ class GenerateRealisation():
         :return:
         """
         # sg = spectra_generator.GenerateRealisation(sm, num_realizations)
-        self._gen_random_numbers(100)
+        self._gen_random_numbers(self.num_spectra)
         self._calc_fft_random_numbers()
         self._calc_rand_powerspectrum()
         self._calc_inv_rand_powerspectrum()
