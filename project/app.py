@@ -6,7 +6,7 @@ import sys
 import os
 
 # cache = MemcachedCache(['127.0.0.1:112111'])
-cache = SimpleCache()
+cache = SimpleCache(default_timeout=0)
 sys.path.append('../..')
 print(os.getcwd())
 import lib.bootstrappy.libbootstrap.spectralmodel as spectralmodel
@@ -25,14 +25,57 @@ def session_management():
     session.permanent = True
 
 
-@app.route('/api/data/training', methods=['GET', 'POST'])
+@app.route('/api/data/training', methods=['GET'])
 def data_training():
-    return jsonify(cache.get('DATA'))
+    try:
+        my_dict = cache.get('DATA')
+    except:
+        my_dict = {'data': [], 'label': []}
+
+    if not my_dict:
+        my_dict = {'data': [], 'label': []}
+
+    return jsonify(my_dict)
 
 
-@app.route('/api/data/processed', methods=['GET', 'POST'])
+@app.route('/api/data/training/<int:i_iter>', methods=['GET'])
+def data_training_array(i_iter):
+    try:
+        my_data = cache.get('DATA')['data'][i_iter]
+        my_label = cache.get('DATA')['label']
+
+        my_dict = {'data': my_data, 'label': my_label}
+    except:
+        my_dict = {'data': [], 'label': []}
+
+    return jsonify(my_dict)
+
+
+@app.route('/api/data/processed', methods=['GET'])
 def data_processed():
-    return jsonify(cache.get('PROCESSED_DATA'))
+    try:
+        my_dict = cache.get('PROCESSED_DATA')
+    except:
+        my_dict = {'data': [], 'label': []}
+
+    if not my_dict:
+        my_dict = {'data': [], 'label': []}
+
+    return jsonify(my_dict)
+
+
+@app.route('/api/data/processed/<int:i_iter>', methods=['GET'])
+def data_processed_array(i_iter):
+    try:
+        my_data = cache.get('PROCESSED_DATA')['data'][i_iter]
+        my_label = cache.get('PROCESSED_DATA')['label']
+
+        my_dict = {'data': my_data, 'label': my_label}
+
+    except:
+        my_dict = {'data': [], 'label': []}
+
+    return jsonify(my_dict)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -44,13 +87,6 @@ def index():
         cache.set('PROCESSED_DATA', {'data': [0, 1, 2],
                                      'label': [2, 5, 10]})
 
-    # if not 'DATA' in session:
-    #     session['DATA'] = {'data': [0, 1, 2],
-    #                        'label': [2, 5, 10]}
-    #     session['PROCESSED_DATA'] = {'data': [0, 1, 2],
-    #                                  'label': [2, 5, 10]}
-    # main_form = processing_form.main_form()
-    # print(session['DATA'])
     return render_template('./index.html',
                            data=cache.get('DATA'),
                            processed_data=cache.get('PROCESSED_DATA'))
